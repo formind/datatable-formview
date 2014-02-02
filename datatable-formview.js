@@ -898,7 +898,7 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
     ATTRS: {
     	
     	layout_type: {
-            value: 'table',
+            value: 'form',
             validator: Lang.isString
         },
         /**
