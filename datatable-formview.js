@@ -6,8 +6,8 @@ http://yuilibrary.com/license/
 */
 /*
 formind 1.0.1 (build 1.0.01)
-Copyright 2014 formind. All rights reserved.
-Licensed under the BSD License.
+Copyright 2014 formind.
+Licensed under the MIT License.
 */
 
 YUI.add('datatable-formview', function (Y, NAME) {
@@ -32,34 +32,48 @@ var Lang         = Y.Lang,
 
 
 /**
-View class responsible for rendering a vertical `<table>` from provided data.
+View class responsible for rendering a vertical, horizontal `<table>` from provided data.
 
+Use : "requires": ["datatable-formview"]
+
+	layout_type: 'form' or 'table'
+	//
+	var dataview = new Y.DataTable({columnset 		: cols,
+									recordset 		: rec,
+									layout_type 	: 'form',
+									srcNode 		: sNode
+									});
+
+									
+									
+DataTable 
 @class FormView
 @namespace DataTable
-@extends Widget
+@extends Widget, DataTable.Base
 @since 1.0.1
 **/
 
 Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], {
 	 
-	  BOUNDING_BOX 	: "boundingBox",
-	  TRUE 		  	  : true,
+	BOUNDING_BOX 	: "boundingBox",
+	TRUE 		  	: true,
     FALSE 		  	: false,
     SRC_NODE	  	: 'srcNode',
     TBODY_TEMPLATE	: '<tbody class="{className}"></tbody>',
-    CELL_TEMPLATE	: '<td {headers} class="{className} other">{content}</td>',
+	CELL_TEMPLATE	: '<td {headers} class="{className}">{content}</td>',
+
     ROW_TEMPLATE 	: '<tr id="{rowId}" data-yui3-record="{clientId}" class="{rowClass}">{content}</tr>',
     //if formatter is definied, example : input type : checkbox
     DL_CELL_LABEL_TEMPLATE: '<td STYLE="width:100px;height:35px;" class="yui3-datatableformview-label">{labeltext} </td> ', 
     //if not formatter is definied
-    DL_LABEL_STYLE  : "",//'STYLE="width:150px;height:35px;"',
-    DL_ROW_STYLE    : "",//'STYLE="width:350px;height:35px;"',
+    DL_LABEL_STYLE  : "",
+    DL_ROW_STYLE    : "",
     DL_INPUT_TYPE	: "TEXT",
     DL_TEMP_ROW_ID  : "",
     DL_CELL_TEMPLATE: '<td {temp_label_style} class="yui3-datatableformview-label">{labeltext}</td>' +
     						 '<td><input type="{temp_input_type}" {temp_row_style} id="{temp_row_id}" value="{content}" class="{className}" /><\/td>',
-	  DL_CELL_TEXTAREA  : new Y.Array(),
-    focus_in_out: 0,
+	DL_CELL_TEXTAREA  	: new Y.Array()
+	
     /**
     The HTML template used to create the caption Node if the `caption`
     attribute is set.
@@ -81,14 +95,8 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
     **/
     TABLE_TEMPLATE  : '<table cellspacing="0" class="{className}"/>',
 
-    
 
-    //-----------------------------------------------------------------------//
-    // Public methods
-    //-----------------------------------------------------------------------//
-
-
-	  _getRecord: function (seed) {
+	_getRecord: function (seed) {
         var modelList = this.data,//this.get('modelList'),
             tbody     = this.tbodyNode,
             row       = null,
@@ -534,7 +542,7 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
 	      }
 	      ltbodyNode = this._renderBodyForm();
     	} else {
-    		e.view.__proto__.CELL_TEMPLATE = this.CELL_EDIT_TEMPLATE;
+    		//e.view.__proto__.CELL_TEMPLATE = this.CELL_EDIT_TEMPLATE;
     		e.view.render();
     		
       }
@@ -594,6 +602,7 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
         attrs.host  = this.get('host') || this;
         attrs.table = this;
         attrs.container = this.tableNode;
+		attrs.modelList = this.data; //hz
 
         this._uiSetCaption(this.get('caption'));
         this._uiSetSummary(this.get('summary'));
@@ -790,7 +799,7 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
     render: function () {
     	
     	
-      if (this.get('container')) {
+		if (this.get('container')) {
       
             this.fire('renderTable', {
                 headerView  : this.get('headerView'),
@@ -897,164 +906,24 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
 }, {
     ATTRS: {
     	
-    	layout_type: {
-            value: 'form',
-            validator: Lang.isString
-        },
-        /**
-        Content for the `<table summary="ATTRIBUTE VALUE HERE">`.  Values
-        assigned to this attribute will be HTML escaped for security.
-
-        @attribute summary
-        @type {String}
-        @default '' (empty string)
-        @since 3.5.0
-        **/
-        //summary: {},
-
-        /**
-        HTML content of an optional `<caption>` element to appear above the
-        table.  Leave this config unset or set to a falsy value to remove the
-        caption.
-
-        @attribute caption
-        @type HTML
-        @default undefined (initially unset)
-        @since 3.6.0
-        **/
-        //caption: {},
-
-        /**
-        Columns to include in the rendered table.
-
-        This attribute takes an array of objects. Each object is considered a
-        data column or header cell to be rendered.  How the objects are
-        translated into markup is delegated to the `headerView`, `bodyView`,
-        and `footerView`.
-
-        The raw value is passed to the `headerView` and `footerView`.  The
-        `bodyView` receives the instance's `displayColumns` array, which is
-        parsed from the columns array.  If there are no nested columns (columns
-        configured with a `children` array), the `displayColumns` is the same
-        as the raw value.
-
-        @attribute columns
-        @type {Object[]}
-        @since 3.6.0
-        **/
-        columns: {
-            validator: isArray
-        },
-
-        /**
-        Width of the table including borders.  This value requires units, so
-        `200` is invalid, but `'200px'` is valid.  Setting the empty string
-        (the default) will allow the browser to set the table width.
-
-        @attribute width
-        @type {String}
-        @default ''
-        @since 3.6.0
-        **/
-        width: {
-            value: '',
-            validator: Lang.isString
-        },
-
-        /**
-        An instance of this class is used to render the contents of the
-        `<thead>`&mdash;the column headers for the table.
-
-        The instance of this View will be assigned to the instance's `head`
-        property.
-
-        It is not strictly necessary that the class function assigned here be
-        a View subclass.  It must however have a `render()` method.
-
-        @attribute headerView
-        @type {Function|Object}
-        @default Y.DataTable.HeaderView
-        @since 3.6.0
-        **/
-        headerView: {
-            value: Y.DataTable.HeaderView,
-            validator: '_validateView'
-        },
-
-        /**
-        Configuration overrides used when instantiating the `headerView`
-        instance.
-
-        @attribute headerConfig
-        @type {Object}
-        @since 3.6.0
-        **/
-        //headerConfig: {},
-
-        /**
-        An instance of this class is used to render the contents of the
-        `<tfoot>` (if appropriate).
-
-        The instance of this View will be assigned to the instance's `foot`
-        property.
-
-        It is not strictly necessary that the class function assigned here be
-        a View subclass.  It must however have a `render()` method.
-
-        @attribute footerView
-        @type {Function|Object}
-        @since 3.6.0
-        **/
-        footerView: {
-            validator: '_validateView'
-        },
-
-        /**
-        Configuration overrides used when instantiating the `footerView`
-        instance.
-
-        @attribute footerConfig
-        @type {Object}
-        @since 3.6.0
-        **/
-        footerConfig: {},
-		  
 		container : {
 			    valueFn:"_defaultCB",
 			    setter: "_setCB",
 			    writeOnce: this.TRUE
 		},
-    	  
-    	  
-        /**
-        An instance of this class is used to render the contents of the table's
-        `<tbody>`&mdash;the data cells in the table.
-
-        The instance of this View will be assigned to the instance's `body`
-        property.
-
-        It is not strictly necessary that the class function assigned here be
-        a View subclass.  It must however have a `render()` method.
-
-        @attribute bodyView
-        @type {Function|Object}
-        @default Y.DataTable.BodyView
-        @since 3.6.0
-        **/
-        bodyView: {
+		headerView: {
+            value: Y.DataTable.HeaderView,
+            validator: '_validateView'
+        },
+		bodyView: {
             value: Y.DataTable.BodyView,
             validator: '_validateView'
         },
-
-        /**
-        Configuration overrides used when instantiating the `bodyView`
-        instance.
-
-        @attribute bodyConfig
-        @type {Object}
-        @since 3.6.0
-        **/
-        bodyConfig: {}
+    	layout_type: {
+            value: 'form',
+            validator: Lang.isString
+        }
+      
         
     }
 });
