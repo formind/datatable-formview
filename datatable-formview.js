@@ -72,7 +72,7 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
     DL_TEMP_ROW_ID  : "",
     DL_CELL_TEMPLATE: '<td {temp_label_style} class="yui3-datatableformview-label">{labeltext}</td>' +
     						 '<td><input type="{temp_input_type}" {temp_row_style} id="{temp_row_id}" value="{content}" class="{className}" /><\/td>',
-	DL_CELL_TEXTAREA  	: new Y.Array()
+	DL_CELL_TEXTAREA  	: new Y.Array(),
 	
     /**
     The HTML template used to create the caption Node if the `caption`
