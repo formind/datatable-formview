@@ -906,12 +906,19 @@ Y.DataTable.FormView = Y.Base.create('datatable', Y.Widget, [Y.DataTable.Base], 
 }, {
     ATTRS: {
     	
-		container : {
-			    valueFn:"_defaultCB",
-			    setter: "_setCB",
-			    writeOnce: this.TRUE
-		},
-		headerView: {
+	container : {
+		    valueFn:"_defaultCB",
+		    setter: "_setCB",
+		    writeOnce: this.TRUE
+	},
+	columns: {
+            validator: isArray
+        },
+		width: {
+            value: '',
+            validator: Y.Lang.isString
+        },
+	headerView: {
             value: Y.DataTable.HeaderView,
             validator: '_validateView'
         },
